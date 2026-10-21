@@ -1,23 +1,34 @@
-**Jenkins Jenkins CI/CD Demo**
+# Jenkins CI/CD Demo
 
-A small Node.js app used to practice building a CI/CD pipeline with Jenkins, running locally in Docker.
+A small Node.js app with a complete Jenkins CI/CD pipeline: every push to this repo is automatically tested, built into a Docker image, pushed to Docker Hub, and deployed as a running container.
 
-**What this project demonstrates**
+## Pipeline stages
 
-A Jenkins pipeline defined as code in a Jenkinsfile, stored in this repo rather than typed into the Jenkins UI.
-Jenkins automatically pulling this repo from GitHub and checking out the latest commit on every build.
-A pipeline with multiple stages: checking out code, verifying available tools, and running the app’s tests.
-Running Jenkins itself inside Docker Desktop on Windows, with a persistent volume so jobs and configuration survive container restarts.
+1. **Install and Test**: runs inside a temporary `node:20-alpine` Docker container, installs dependencies, and runs the test suite against the app's health check endpoint.
+2. **Build image**: builds a Docker image from the app, tagged with both the Jenkins build number and `latest`.
+3. **Push to Docker Hub**: pushes both tags to a Docker Hub repository, authenticating with a token stored in Jenkins credentials, never in the code.
+4. **Deploy locally**: stops any previous container and runs the newly built image, making the app live on port 3000.
 
-**App**
+Builds trigger automatically on every Git push, via Jenkins Poll SCM.
 
-A minimal Express.js app with a health check endpoint, used purely to give the pipeline something real to build and test.
+## App
 
-app.js: the Express server
-test.js: a basic test that hits the health check endpoint and checks the response
-package.json: dependencies and scripts
-Jenkinsfile: the pipeline definition Jenkins runs
+A minimal Express.js app with a health check endpoint, used to give the pipeline something real to build and test.
 
-**Status**
+- `app.js`: the Express server
+- `test.js`: a basic test that hits the health check endpoint and checks the response
+- `package.json`: dependencies and scripts
+- `Dockerfile`: builds the app into a container image
+- `Jenkinsfile`: the full pipeline definition
 
-Work in progress. Currently builds and checks out successfully. Next steps: running the build and tests inside a Node Docker container, then building and pushing a Docker image as part of the pipeline.
+## Infrastructure
+
+Jenkins runs locally in Docker Desktop on Windows, built from a custom image with the Docker CLI installed, so it can build and run containers on the host's Docker engine. Jenkins data (jobs, credentials, plugins) persists in a named Docker volume across container restarts.
+
+## What this demonstrates
+
+Pipeline as code, containerised builds, dependency and test automation, secure credential handling, and Docker image publishing, triggered automatically from version control.
+
+## Status
+
+Working end to end, from commit to a deployed container. Next: redeploying the same pipeline on an Azure VM as a cloud portfolio piece.
