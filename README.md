@@ -3,6 +3,7 @@
 A small Node.js app used to practice building a CI/CD pipeline with Jenkins, running locally in Docker.
 
 **What this project demonstrates**
+
 A Jenkins pipeline defined as code in a Jenkinsfile, stored in this repo rather than typed into the Jenkins UI.
 Jenkins automatically pulling this repo from GitHub and checking out the latest commit on every build.
 A pipeline with multiple stages: checking out code, verifying available tools, and running the app’s tests.
